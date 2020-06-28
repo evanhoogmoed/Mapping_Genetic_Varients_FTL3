@@ -13,15 +13,12 @@ import numpy as np
 df = pd.read_excel(r'C:\Users\emmav\reumutation\dataset1.xlsx',index_col=None,na_values=['NaN'],usecols = "J,K:L")
 df = df.dropna()
 
+#store df in numpy arr; col 0 = overlappingGene, col 1 = knownCNV, col 2 = repeats
+df_arr = df.to_numpy()
+#print(df_arr[0][0])
 
 
-overlap = df['overlappingGene']
-knownCNV = df['knownCNV']
-repeats = df['repeats']
 
-#print(overlap)
-#print(knownCNV)
-#print(repeats)
 
 
 
