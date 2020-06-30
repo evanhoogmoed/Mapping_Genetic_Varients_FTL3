@@ -23,10 +23,6 @@ mutationCount = df.count().sum()
 #count number of samples with no mutations
 countNan = totalsamples - mutationCount
 
-
-#drop values that are NAN
-df = df.dropna()
-
 #create bar graph
 objects = ('Mutations','No Mutations')
 y_pos = np.arange(len(objects))
@@ -37,11 +33,11 @@ plt.ylabel('Num of Samples')
 plt.title('Mutated vs Non-Mutated Samples')
 plt.show
 
-#store df in numpy arr; col 0 = overlappingGene, col 1 = knownCNV, col 2 = repeats
-df_arr = df.to_numpy()
-#print(df_arr[0][0])
+#frequency distribution best Laf
+lAF = pd.read_excel(r'C:\Users\emmav\reumutation\dataset1.xlsx',index_col=None,na_values=['NaN'],usecols = "M,N:O")
 
-
+freqTable = lAF.apply(lambda x: pd.cut(x, bins=[0,.1,.3,.4,.5]).value_counts()).add_prefix('count_')
+print(freqTable)
 
 
 
