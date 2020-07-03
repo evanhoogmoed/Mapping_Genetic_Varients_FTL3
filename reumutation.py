@@ -9,37 +9,36 @@ import pandas as pd
 import matplotlib as plt
 import numpy as np
 
-#create dataframe from excel file using desired columns and drop empty cells
-df = pd.read_excel(r'C:\Users\emmav\reumutation\dataset1.xlsx',index_col=None,na_values=['NaN'],usecols = "J,K:L")
-#Create bar graph showing those with mutations vs those without
-#calculate total number of samples
-totalsamples = len(df)
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+#create dataframe from excel file using desired columns
+dfControl = pd.read_excel(r'C:\Users\emmav\reumutation\flt3Controlpop.xlsx',index_col=None,na_values=['NaN'])
+#print(dfControl)
+
+dfCancer = pd.read_json(r'C:\Users\emmav\reumutation\mutations.2020-07-03.json')
+#print(dfCancer)
 
 
-#calculate total num of mutations
-mutationCount = df.count().sum()
+#create frequency chart of mutations in control population
+mutations = df['Annotation']
+missenseCount = mutations.str.count('missense_variant').sum()
+threeprimeCount = mutations.str.count('3_prime_UTR_variant').sum()
+synonCount = mutations.str.count('synonymous_variant').sum()
+frameshiftCount = mutations.str.count('frameshift_variant').sum()
+stopgainCount = mutations.str.count('stop_gained').sum()
+intronCount = mutations.str.count('intron_variant').sum()
+spliceregionCount = mutations.str.count('splice_region_variant').sum()
 
-
-#count number of samples with no mutations
-countNan = totalsamples - mutationCount
-
-#create bar graph
-objects = ('Mutations','No Mutations')
+f, ax = plt.subplots(figsize=(18,5))
+objects = ('missense','3-prime','synonymous','frameshift','stop-gain','intron','splice-region')
 y_pos = np.arange(len(objects))
-position = [mutationCount,countNan]
-plt.bar(y_pos,position,align='center',alpha = .5,color='b')
+position = [missenseCount,threeprimeCount,synonCount,frameshiftCount,stopgainCount,intronCount,spliceregionCount]
+f = plt.bar(y_pos,position,align='center',alpha = .5,color='b')
 plt.xticks(y_pos,objects)
 plt.ylabel('Num of Samples')
-plt.title('Mutated vs Non-Mutated Samples')
+plt.title('Frequency of Mutations')
 plt.show
-
-#frequency distribution best Laf
-lAF = pd.read_excel(r'C:\Users\emmav\reumutation\dataset1.xlsx',index_col=None,na_values=['NaN'],usecols = "M,N:O")
-
-freqTable = lAF.apply(lambda x: pd.cut(x, bins=[0,.1,.3,.4,.5]).value_counts()).add_prefix('count_')
-print(freqTable)
-
-
-
-
 
