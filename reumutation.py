@@ -6,21 +6,15 @@ Created on Fri Jun 26 20:59:34 2020
 """
 
 import pandas as pd
-import matplotlib as plt
 import numpy as np
-
-
-import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 
 #create dataframe from excel file using desired columns
 dfControl = pd.read_excel(r'C:\Users\emmav\reumutation\flt3Controlpop.xlsx',index_col=None,na_values=['NaN'])
-#print(dfControl)
 
-dfCancer = pd.read_json(r'C:\Users\emmav\reumutation\mutations.2020-07-03.json')
-#print(dfCancer)
 
+#store json file into dataframe
+dfCancer = pd.read_json(r'C:\Users\emmav\reumutation\cancermutations.json')
 
 #create frequency chart of mutations in control population
 mutations = df['Annotation']
