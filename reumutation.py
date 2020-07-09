@@ -6,62 +6,39 @@ Created on Fri Jun 26 20:59:34 2020
 """
 
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np  
 #create dataframe from excel file using desired columns
 dfControl = pd.read_excel(r'C:\Users\emmav\reumutation\flt3Controlpop.xlsx',index_col=None,na_values=['NaN'])
 
-
-#store json file into dataframe
-dfCancer = pd.read_json(r'C:\Users\emmav\reumutation\cancermutations.json')
-
-#compare DNA Change between Cancer and Control
-#graph of Cancer
-def basepairChangeCancerSum(dfCancer):
-    dnaChangeCancer = dfCancer['mutation']
-    variationCountA = dnaChangeCancer.str.count('A>').sum()
-    variationCountT = dnaChangeCancer.str.count('T>').sum()
-    variationCountC = dnaChangeCancer.str.count('C>').sum()
-    variationCountG = dnaChangeCancer.str.count('G>').sum()
-
-def basepairChangeControlSum(dfControl):
-    #change control into same format
-    dfControl['dnachange'] = dfControl['Reference'] + '>' + dfControl['Alternate']
-    dnaChangeControl = dfControl['dnachange']
-    variationControlCountA = dnaChangeControl.str.count('A>').sum()
-    variationControlCountT = dnaChangeControl.str.count('T>').sum()
-    variationControlCountC = dnaChangeControl.str.count('C>').sum()
-    variationControlCountG = dnaChangeControl.str.count('G>').sum()
-
-#create frequency chart of mutations in control population
-def mutationChart(df):
-    mutations = df['Annotation']
-    missenseCount = mutations.str.count('missense_variant').sum()
-    threeprimeCount = mutations.str.count('3_prime_UTR_variant').sum()
-    synonCount = mutations.str.count('synonymous_variant').sum()
-    frameshiftCount = mutations.str.count('frameshift_variant').sum()
-    stopgainCount = mutations.str.count('stop_gained').sum()
-    intronCount = mutations.str.count('intron_variant').sum()
-    spliceregionCount = mutations.str.count('splice_region_variant').sum()
-    fiveprimeCount = mutations.str.count('5_prime_UTR_variant').sum()
+dfCancer = pd.read_excel(r'C:\Users\emmav\reumutation\amlmutation.xlsx',index_col=None,na_values=['NaN'],usecols = "D,G,O,P,AA,AB")
 
 
-    f, ax = plt.subplots(figsize=(18,5))
-    objects = ('missense','3-prime','synonymous','frameshift','stop-gain','intron','splice-region','5-prime')
-    y_pos = np.arange(len(objects))
-    position = [missenseCount,threeprimeCount,synonCount,frameshiftCount,stopgainCount,intronCount,spliceregionCount,fiveprimeCount]
-    f = plt.bar(y_pos,position,align='center',alpha = .5,color='b')
-    plt.xticks(y_pos,objects)
-    plt.ylabel('Num of Samples')
-    plt.title('Frequency of Mutations')
-    plt.show
-
+def lollipop(df):
+    missenserows = df[df['Mutation Type'] == 'Missense_Mutation']
+    countm = missenserows.groupby(['Protein Change','Start Pos']).size().reset_index(name="Number")
+    mvalues = countm["Number"].to_numpy()
+    mlocation = countm["Start Pos"].to_numpy()
+    plt.stem(mlocation,mvalues,markerfmt='o', label='Missense')
+    
+    ifrows = df[df['Mutation Type'] == 'In_Frame_Ins']
+    countif = ifrows.groupby(['Protein Change','Start Pos']).size().reset_index(name="Number")
+    ifvalues = countif["Number"].to_numpy()
+    iflocation = countif["Start Pos"].to_numpy()
+    plt.stem(iflocation,ifvalues,markerfmt='o', label='In Frame')
+    
+    nrows = df[df['Mutation Type'] == 'Nonsense_Mutation']
+    countn = nrows.groupby(['Protein Change','Start Pos']).size().reset_index(name="Number")
+    nvalues = countn["Number"].to_numpy()
+    nlocation = countn["Start Pos"].to_numpy()
+    plt.stem(nlocation,nvalues,markerfmt='o', label='Nonsense')
+    
+    
+    plt.legend()
+    plt.show()
 
 def main():
-    mutationChart(dfControl)
-    basepairChangeCancerSum(dfCancer)
-    basepairChangeControlSum(dfControl)
+    lollipop(dfCancer)
     
 if __name__ == "__main__":
     main()
