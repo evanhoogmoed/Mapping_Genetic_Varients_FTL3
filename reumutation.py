@@ -15,6 +15,16 @@ dfCancer = pd.read_excel(r'C:\Users\emmav\reumutation\amlmutation.xlsx',index_co
 
 
 def lollipop(df):
+    newlocations = []
+    locations = df['Protein Change']
+    for i in locations:
+        num1 = i[1]
+        num2 = i[2]
+        num3 = i[3]
+        sumnum = num1 + num2 + num3
+        newlocations.append(sumnum)
+    df['locations']= newlocations
+    
     missenserows = df[df['Mutation Type'] == 'Missense_Mutation']
     countm = missenserows.groupby(['Protein Change','Start Pos']).size().reset_index(name="Number")
     mvalues = countm["Number"].to_numpy()
