@@ -12,37 +12,45 @@ import numpy as np
 dfControl = pd.read_excel(r'C:\Users\emmav\reumutation\flt3Controlpop.xlsx',index_col=None,na_values=['NaN'])
 
 dfCancer = pd.read_excel(r'C:\Users\emmav\reumutation\amlmutation.xlsx',index_col=None,na_values=['NaN'],usecols = "D,G,O,P,AA,AB")
-
+newlocations = []
+locations = dfCancer['Protein Change']
+for i in locations:
+    num1 = i[1]
+    num2 = i[2]
+    num3 = i[3]
+    sumnum = num1 + num2 + num3
+    newlocations.append(sumnum)
+dfCancer['locations']= newlocations
+dfCancer = dfCancer.sort_values('locations', ascending = True)
+#print(dfCancer)
 
 def lollipop(df):
-    newlocations = []
-    locations = df['Protein Change']
-    for i in locations:
-        num1 = i[1]
-        num2 = i[2]
-        num3 = i[3]
-        sumnum = num1 + num2 + num3
-        newlocations.append(sumnum)
-    df['locations']= newlocations
-    
+
     missenserows = df[df['Mutation Type'] == 'Missense_Mutation']
-    countm = missenserows.groupby(['Protein Change','Start Pos']).size().reset_index(name="Number")
-    mvalues = countm["Number"].to_numpy()
-    mlocation = countm["Start Pos"].to_numpy()
-    plt.stem(mlocation,mvalues,markerfmt='o', label='Missense')
+    missenserows = missenserows.sort_values(by=['locations'])
+    mvalues = missenserows['# Mut in Sample'].to_numpy()
+    mlocation = missenserows["locations"].to_numpy()
+    
+
     
     ifrows = df[df['Mutation Type'] == 'In_Frame_Ins']
-    countif = ifrows.groupby(['Protein Change','Start Pos']).size().reset_index(name="Number")
-    ifvalues = countif["Number"].to_numpy()
-    iflocation = countif["Start Pos"].to_numpy()
-    plt.stem(iflocation,ifvalues,markerfmt='o', label='In Frame')
-    
+    ifrows = ifrows.sort_values(by=['locations'])
+    ifvalues = ifrows['# Mut in Sample'].to_numpy()
+    iflocation = ifrows["locations"].to_numpy()
+
+
+
     nrows = df[df['Mutation Type'] == 'Nonsense_Mutation']
-    countn = nrows.groupby(['Protein Change','Start Pos']).size().reset_index(name="Number")
-    nvalues = countn["Number"].to_numpy()
-    nlocation = countn["Start Pos"].to_numpy()
-    plt.stem(nlocation,nvalues,markerfmt='o', label='Nonsense')
+    nrows = nrows.sort_values(by=['locations'])
+    nvalues = nrows['# Mut in Sample'].to_numpy()
+    nlocation = nrows["locations"].to_numpy()
+
     
+    f, ax = plt.subplots(sharex = True, figsize=(18,5))
+    plt.stem(mlocation,mvalues,markerfmt='o', label='Missense')
+    plt.stem(iflocation,ifvalues,markerfmt='o', label='In Frame')
+    f = plt.stem(nlocation,nvalues,markerfmt='o', label='Nonsense')
+   
     
     plt.legend()
     plt.show()
